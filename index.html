@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber-SISR & CyberOps Hub • Plateforme de Révision BTS SIO & Certifications</title>
+  <meta name="description" content="Plateforme complète et interactive de révision pour le BTS SIO SISR, la certification Cisco CyberOps Associate (200-201 CBROPS), la CEJM et le TOEIC avec Coach IA intégré.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-badge">⚡</div>
+        <div class="logo-text">
+          <h1>CYBER-SISR</h1>
+          <span>SISR & CyberOps Hub</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-title">Navigation Principale</div>
+        
+        <div class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span>
+          <span>Tableau de Bord</span>
+        </div>
+
+        <div class="nav-section-title">Pôles d'Examen</div>
+
+        <div class="nav-item" data-view="sisr" id="nav-sisr">
+          <span class="nav-icon">🖥️</span>
+          <span>BTS SIO SISR</span>
+          <span class="badge-pill">E4/E5</span>
+        </div>
+
+        <div class="nav-item" data-view="cyberops" id="nav-cyberops">
+          <span class="nav-icon">🛡️</span>
+          <span>Cisco CyberOps</span>
+          <span class="badge-pill" style="background: rgba(6, 182, 212, 0.2); color: var(--cyan-primary);">200-201</span>
+        </div>
+
+        <div class="nav-item" data-view="cejm" id="nav-cejm">
+          <span class="nav-icon">⚖️</span>
+          <span>CEJM Anti-Galère</span>
+          <span class="badge-pill" style="background: rgba(139, 92, 246, 0.2); color: #c084fc;">Droit/Éco</span>
+        </div>
+
+        <div class="nav-item" data-view="toeic" id="nav-toeic">
+          <span class="nav-icon">🇬🇧</span>
+          <span>TOEIC Booster</span>
+          <span class="badge-pill" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">750+</span>
+        </div>
+
+        <div class="nav-section-title">Outils & Intelligence</div>
+
+        <div class="nav-item" data-view="coach" id="nav-coach">
+          <span class="nav-icon">🤖</span>
+          <span>Coach IA Tuteur</span>
+          <span class="badge-pill" style="background: linear-gradient(135deg, var(--cyan-primary), var(--purple-primary)); color: #fff;">LIVE</span>
+        </div>
+
+        <div class="nav-item" data-view="tools" id="nav-tools">
+          <span class="nav-icon">🧮</span>
+          <span>Boîte à Outils SISR</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="streak-card">
+          <span class="streak-icon">🔥</span>
+          <div class="streak-info">
+            <span class="streak-count" id="sidebar-streak-count">1 Jour</span>
+            <span class="streak-label">Série active de révision</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="header-btn" style="flex: 1; font-size: 0.78rem; justify-content: center;" onclick="App.exportUserData()" title="Exporter mes données au format JSON">
+            💾 Exporter
+          </button>
+          <button class="header-btn" style="flex: 1; font-size: 0.78rem; justify-content: center;" onclick="App.triggerImportJSON()" title="Restaurer une sauvegarde JSON">
+            📥 Importer
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN APP WRAPPER -->
+    <main id="main-wrapper">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <div class="page-title-group">
+            <h2 id="header-title">Tableau de Bord des Révisions</h2>
+            <p id="header-subtitle">Progression globale BTS SIO SISR, CyberOps, CEJM & TOEIC</p>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <button class="header-btn" onclick="App.renderView('coach')" title="Ouvrir le Coach IA">
+            <span>🤖</span>
+            <span>Coach IA</span>
+          </button>
+
+          <button class="header-btn" onclick="App.openSettingsModal()" title="Paramètres & Clé API">
+            <span>⚙️</span>
+            <span>Paramètres</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEWS CONTENT AREA -->
+      <div id="content-area">
+        <!-- VIEW: DASHBOARD -->
+        <section id="view-dashboard" class="view-section active"></section>
+
+        <!-- VIEW: BTS SIO SISR -->
+        <section id="view-sisr" class="view-section"></section>
+
+        <!-- VIEW: CISCO CYBEROPS -->
+        <section id="view-cyberops" class="view-section"></section>
+
+        <!-- VIEW: CEJM -->
+        <section id="view-cejm" class="view-section"></section>
+
+        <!-- VIEW: TOEIC -->
+        <section id="view-toeic" class="view-section"></section>
+
+        <!-- VIEW: AI COACH -->
+        <section id="view-coach" class="view-section"></section>
+
+        <!-- VIEW: SISR TOOLS & CHEATSHEET -->
+        <section id="view-tools" class="view-section"></section>
+
+        <!-- VIEW: QUIZ ACTIVE RUNNER -->
+        <section id="view-quiz" class="view-section">
+          <div id="quiz-container-root"></div>
+        </section>
+
+        <!-- VIEW: FLASHCARDS RUNNER -->
+        <section id="view-flashcards" class="view-section">
+          <div id="flashcards-container-root"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: SETTINGS & GEMINI API KEY -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚙️</span> Paramètres & Configuration IA
+        </h3>
+        <button class="modal-close-btn" onclick="App.closeSettingsModal()">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="form-group">
+          <label for="settings-gemini-key">Clé API Google Gemini (Gratuite) :</label>
+          <input type="password" id="settings-gemini-key" class="form-control" placeholder="AIzaSy...">
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 0.25rem;">
+            Optionnel. Si renseignée, le Coach IA utilise directement Gemini 1.5 Flash pour générer des explications poussées et des réponses en temps réel. Tu peux obtenir une clé gratuitement sur <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>.
+          </p>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-top: 1px solid var(--border-subtle);">
+          <div>
+            <div style="font-weight: 600; font-size: 0.9rem;">Effets Sonores Rétro/Cyber</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Sons de confirmation, d'erreur et de réussite aux quizz</div>
+          </div>
+          <input type="checkbox" id="settings-sound-toggle" style="width: 20px; height: 20px; accent-color: var(--cyan-primary);">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button class="header-btn" onclick="App.closeSettingsModal()">Annuler</button>
+          <button class="header-btn primary" onclick="App.saveSettingsFromModal()">Enregistrer les Modifications</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORT RAW CYBEROPS EVALUATIONS -->
+  <div id="import-questions-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+          <span>📥</span> Importer des Questions d'Évaluation CyberOps
+        </h3>
+        <button class="modal-close-btn" onclick="CyberOpsHub.closeImporterModal()">&times;</button>
+      </div>
+
+      <p style="font-size: 0.88rem; margin-bottom: 1rem;">
+        Colle ici les questions et réponses copiées depuis les sites d'évaluations (ex: ITExamAnswers, NetAcad ou tes PDF). Notre convertisseur extrait automatiquement la question, les propositions et la bonne réponse !
+      </p>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label for="import-target-domain">Domaine CyberOps cible :</label>
+        <select id="import-target-domain" class="form-control">
+          <option value="dom1">1. Security Concepts</option>
+          <option value="dom2">2. Security Monitoring</option>
+          <option value="dom3">3. Host-Based Analysis</option>
+          <option value="dom4">4. Network Intrusion Analysis</option>
+          <option value="dom5">5. Security Policies and Procedures</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="raw-questions-input">Texte brut des questions / réponses :</label>
+        <textarea id="raw-questions-input" class="form-control" rows="8" placeholder="Exemple de format pris en charge :
+
+1. Which protocol is used to collect metadata about network flows without payload?
+A. PCAP
+[x] B. NetFlow
+C. Syslog
+D. SNMP
+
+Explanation: NetFlow captures 5-tuple flow metadata."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="header-btn" onclick="CyberOpsHub.closeImporterModal()">Annuler</button>
+        <button class="header-btn primary" onclick="CyberOpsHub.processRawPastedQuestions()">Convertir & Ajouter à la Base 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIDDEN FILE INPUT FOR IMPORTING JSON BACKUP -->
+  <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="App.handleImportFile(event)">
+
+  <!-- SCRIPT FILES -->
+  <script src="js/data/sisr-database.js"></script>
+  <script src="js/data/cyberops-database.js"></script>
+  <script src="js/data/cejm-database.js"></script>
+  <script src="js/data/toeic-database.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/modules/quiz-engine.js"></script>
+  <script src="js/modules/flashcards.js"></script>
+  <script src="js/modules/sisr-tools.js"></script>
+  <script src="js/modules/ai-coach.js"></script>
+  <script src="js/modules/cyberops-hub.js"></script>
+  <script src="js/modules/cejm-hub.js"></script>
+  <script src="js/modules/toeic-hub.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
