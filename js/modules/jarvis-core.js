@@ -505,28 +505,26 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
         }
         
         const errJson = await res.json().catch(() => ({}));
-        lastError = new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur Groq API`);
+        lastError = new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur le modèle ${modelName}`);
         
-        // On continue la boucle si c'est un problème avec le modèle (inexistant, désactivé, etc.)
-        const msg = lastError.message.toLowerCase();
+        // Si la clé est invalide (401), on arrête tout et on avertit l'utilisateur
         if (res.status === 401) {
-            throw new Error("Ta clé API Groq est invalide. Vérifie que tu as bien copié la clé complète.");
+            throw new Error("Ta clé API Groq est invalide ou expirée. Vérifie que tu l'as bien copiée (elle commence par gsk_...).");
         }
-        if (!msg.includes("does not exist") && !msg.includes("not have access") && !msg.includes("decommissioned") && !msg.includes("no longer supported") && !msg.includes("model")) {
-          throw lastError; // Si c'est une autre erreur grave (quota dépassé), on arrête tout
-        }
+        
+        // Pour toute autre erreur (modèle supprimé, quota dépassé, erreur serveur), on ignore et on essaie le modèle suivant !
+        console.warn(`Modèle ${modelName} indisponible, passage au suivant...`, lastError.message);
+        
       } catch (e) {
-        const msg = (e.message || "").toLowerCase();
-        if (msg.includes("invalid") || msg.includes("invalide")) {
-            throw e; // Lancer direct si c'est la clé invalide
-        }
-        if (!msg.includes("does not exist") && !msg.includes("not have access") && !msg.includes("decommissioned") && !msg.includes("no longer supported") && !msg.includes("model") && !msg.includes("fetch")) {
-          throw e; // Lancer l'erreur si c'est autre chose qu'un modèle manquant
+        // Exception réseau (ex: pas d'internet ou CORS) ou 401 balancé
+        if (e.message && (e.message.includes("invalide") || e.message.includes("fetch"))) {
+            throw e; 
         }
         lastError = e;
       }
     }
     
+    // Si la boucle se termine sans avoir retourné de réponse, c'est que tous les modèles ont échoué.
     throw lastError;
   },
 
