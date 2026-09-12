@@ -458,8 +458,12 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 
     const url = "https://api.groq.com/openai/v1/chat/completions";
     
-    // Si l'utilisateur envoie une image, on doit utiliser le modèle multimodal LLaVA sur Groq
-    const modelName = imagePayload ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
+    // Modèles Groq avec fallback. Si le premier échoue, on tente le suivant.
+    const textModels = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama3-70b-8192", "llama3-8b-8192"];
+    const visionModels = ["llama-3.2-11b-vision-preview", "llama-3.2-90b-vision-preview"];
+    
+    const modelsToTry = imagePayload ? visionModels : textModels;
+    let lastError = new Error("Aucun modèle Groq disponible.");
 
     const messages = [
       { role: "system", content: systemInstruction }
@@ -477,29 +481,45 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
       messages.push({ role: "user", content: `Question de Julia : ${userPrompt}` });
     }
 
-    const payload = {
-      model: modelName,
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 1000
-    };
+    for (const modelName of modelsToTry) {
+      const payload = {
+        model: modelName,
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 1000
+      };
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    });
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(payload)
+        });
 
-    if (res.ok) {
-      const data = await res.json();
-      return data.choices?.[0]?.message?.content || "Désolé Julia, anomalie dans les flux de données Groq.";
+        if (res.ok) {
+          const data = await res.json();
+          return data.choices?.[0]?.message?.content || "Désolé Julia, anomalie dans les flux de données Groq.";
+        }
+        
+        const errJson = await res.json().catch(() => ({}));
+        lastError = new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur Groq API`);
+        
+        // Si l'erreur concerne le modèle (does not exist), on passe au suivant dans la boucle
+        if (!lastError.message.toLowerCase().includes("does not exist") && !lastError.message.toLowerCase().includes("not have access")) {
+          throw lastError; // Si c'est une erreur de clé API, on arrête tout
+        }
+      } catch (e) {
+        if (e.message && !e.message.toLowerCase().includes("does not exist") && !e.message.toLowerCase().includes("not have access") && !e.message.includes("fetch")) {
+          throw e; // Lancer l'erreur si c'est autre chose qu'un modèle manquant
+        }
+        lastError = e;
+      }
     }
     
-    const errJson = await res.json().catch(() => ({}));
-    throw new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur Groq API`);
+    throw lastError;
   },
 
   generateJarvisLocalResponse(prompt) {
