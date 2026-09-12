@@ -456,7 +456,7 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Si une image est fournie, analyse-la avec attention pour aider Julia à réviser ou à faire un QCM dessus.
 - Fournis des réponses impeccablement structurées, claires et faciles à lire et à écouter oralement.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     const parts = [{ text: `${systemInstruction}\n\nQuestion de Julia : ${userPrompt}` }];
     
