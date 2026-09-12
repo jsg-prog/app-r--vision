@@ -466,8 +466,8 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
       generationConfig: { temperature: 0.7, maxOutputTokens: 1000 }
     };
 
-    // Cascade de modèles pour garantir la compatibilité avec toutes les clés gratuites
-    const MODELS_TO_TRY = ["gemini-2.0-flash-exp", "gemini-1.5-flash-latest", "gemini-1.0-pro"];
+    // Cascade de modèles pour garantir la compatibilité avec toutes les clés gratuites (comptes persos et scolaires)
+    const MODELS_TO_TRY = ["gemini-1.5-flash", "gemini-pro", "gemini-1.5-flash-8b"];
     let lastError = new Error("Aucun modèle disponible pour cette clé API.");
 
     for (const modelName of MODELS_TO_TRY) {
@@ -484,9 +484,10 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
         }
         const errJson = await res.json().catch(() => ({}));
         lastError = new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur ${modelName}`);
-        // Si le modèle n'est pas trouvé/supporté, on essaie le suivant
+        
+        // Si le modèle n'est pas trouvé/supporté, on continue la boucle pour essayer le suivant
         if (!lastError.message.includes("not found") && !lastError.message.includes("not supported")) {
-          throw lastError; // Erreur de clé invalide ou quota → pas la peine d'essayer les autres
+          throw lastError; // Erreur de quota ou clé invalide -> on arrête tout
         }
       } catch(e) {
         if (e.message && !e.message.includes("not found") && !e.message.includes("not supported") && !e.message.includes("fetch")) {
@@ -494,6 +495,10 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
         }
         lastError = e;
       }
+    }
+    
+    if (lastError.message.includes("not found") || lastError.message.includes("not supported")) {
+      throw new Error("Ta clé API bloque l'accès aux modèles. Si tu utilises une adresse e-mail du lycée (Google Workspace), les modèles Gemini sont bloqués par l'administrateur. Va sur Google AI Studio avec une adresse e-mail personnelle (@gmail.com) pour générer une nouvelle clé !");
     }
     throw lastError;
   },
