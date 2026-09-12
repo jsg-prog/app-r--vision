@@ -507,12 +507,20 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
         const errJson = await res.json().catch(() => ({}));
         lastError = new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur Groq API`);
         
-        // Si l'erreur concerne le modèle (does not exist), on passe au suivant dans la boucle
-        if (!lastError.message.toLowerCase().includes("does not exist") && !lastError.message.toLowerCase().includes("not have access")) {
-          throw lastError; // Si c'est une erreur de clé API, on arrête tout
+        // On continue la boucle si c'est un problème avec le modèle (inexistant, désactivé, etc.)
+        const msg = lastError.message.toLowerCase();
+        if (res.status === 401) {
+            throw new Error("Ta clé API Groq est invalide. Vérifie que tu as bien copié la clé complète.");
+        }
+        if (!msg.includes("does not exist") && !msg.includes("not have access") && !msg.includes("decommissioned") && !msg.includes("no longer supported") && !msg.includes("model")) {
+          throw lastError; // Si c'est une autre erreur grave (quota dépassé), on arrête tout
         }
       } catch (e) {
-        if (e.message && !e.message.toLowerCase().includes("does not exist") && !e.message.toLowerCase().includes("not have access") && !e.message.includes("fetch")) {
+        const msg = (e.message || "").toLowerCase();
+        if (msg.includes("invalid") || msg.includes("invalide")) {
+            throw e; // Lancer direct si c'est la clé invalide
+        }
+        if (!msg.includes("does not exist") && !msg.includes("not have access") && !msg.includes("decommissioned") && !msg.includes("no longer supported") && !msg.includes("model") && !msg.includes("fetch")) {
           throw e; // Lancer l'erreur si c'est autre chose qu'un modèle manquant
         }
         lastError = e;
