@@ -456,45 +456,46 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Si une image est fournie, analyse-la avec attention pour aider Julia à réviser ou à faire un QCM dessus.
 - Fournis des réponses impeccablement structurées, claires et faciles à lire et à écouter oralement.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
+    // Construction du payload (avec ou sans image)
     const parts = [{ text: `${systemInstruction}\n\nQuestion de Julia : ${userPrompt}` }];
-    
     if (imagePayload) {
-      parts.push({
-        inlineData: {
-          mimeType: imagePayload.mime,
-          data: imagePayload.data
-        }
-      });
+      parts.push({ inlineData: { mimeType: imagePayload.mime, data: imagePayload.data } });
     }
-
     const payload = {
-      contents: [
-        {
-          role: "user",
-          parts: parts
-        }
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1000
-      }
+      contents: [{ role: "user", parts }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 1000 }
     };
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    // Cascade de modèles pour garantir la compatibilité avec toutes les clés gratuites
+    const MODELS_TO_TRY = ["gemini-2.0-flash-exp", "gemini-1.5-flash-latest", "gemini-1.0-pro"];
+    let lastError = new Error("Aucun modèle disponible pour cette clé API.");
 
-    if (!res.ok) {
-      const errJson = await res.json();
-      throw new Error(errJson.error?.message || `Erreur HTTP ${res.status}`);
+    for (const modelName of MODELS_TO_TRY) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "Désolé Julia, anomalie dans les flux de données.";
+        }
+        const errJson = await res.json().catch(() => ({}));
+        lastError = new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur ${modelName}`);
+        // Si le modèle n'est pas trouvé/supporté, on essaie le suivant
+        if (!lastError.message.includes("not found") && !lastError.message.includes("not supported")) {
+          throw lastError; // Erreur de clé invalide ou quota → pas la peine d'essayer les autres
+        }
+      } catch(e) {
+        if (e.message && !e.message.includes("not found") && !e.message.includes("not supported") && !e.message.includes("fetch")) {
+          throw e;
+        }
+        lastError = e;
+      }
     }
-
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Désolé Julia, anomalie dans les flux de données.";
+    throw lastError;
   },
 
   generateJarvisLocalResponse(prompt) {
