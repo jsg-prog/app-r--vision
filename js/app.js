@@ -403,6 +403,18 @@ const App = {
     const settings = StorageManager.getSettings();
     document.getElementById("settings-gemini-key").value = settings.geminiApiKey || "";
     document.getElementById("settings-sound-toggle").checked = settings.soundEnabled;
+
+    const voiceSelect = document.getElementById("settings-voice-select");
+    if (voiceSelect && "speechSynthesis" in window) {
+      const voices = window.speechSynthesis.getVoices();
+      let optionsHtml = '<option value="">Voix par défaut (Automatique)</option>';
+      voices.forEach(voice => {
+        const selected = (settings.jarvisVoiceName === voice.name) ? "selected" : "";
+        optionsHtml += `<option value="${voice.name}" ${selected}>${voice.name} (${voice.lang})</option>`;
+      });
+      voiceSelect.innerHTML = optionsHtml;
+    }
+
     modal.classList.add("active");
   },
 
@@ -414,10 +426,13 @@ const App = {
   saveSettingsFromModal() {
     const key = document.getElementById("settings-gemini-key").value.trim();
     const sound = document.getElementById("settings-sound-toggle").checked;
+    const voiceSelect = document.getElementById("settings-voice-select");
+    const voiceName = voiceSelect ? voiceSelect.value : "";
 
     StorageManager.saveSettings({
       geminiApiKey: key,
-      soundEnabled: sound
+      soundEnabled: sound,
+      jarvisVoiceName: voiceName
     });
 
     this.closeSettingsModal();

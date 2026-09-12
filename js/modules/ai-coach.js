@@ -14,6 +14,8 @@ const AiCoach = {
   speechRate: 1.0,
   currentVoice: null,
   recognition: null,
+  currentImageData: null,
+  currentImageMime: null,
 
   init(containerEl) {
     this.containerEl = containerEl;
@@ -83,6 +85,11 @@ const AiCoach = {
   loadBestFrenchVoice() {
     if (!("speechSynthesis" in window)) return;
     const voices = window.speechSynthesis.getVoices();
+    const settings = StorageManager.getSettings();
+    if (settings.jarvisVoiceName) {
+      this.currentVoice = voices.find(v => v.name === settings.jarvisVoiceName) || voices[0];
+      return;
+    }
     // Prioritize natural female French voices (Microsoft Julie, Microsoft Hortense)
     this.currentVoice = voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Julie") || v.name.includes("Hortense") || v.name.includes("Denise")))
       || voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Google") || v.name.includes("Natural")))
@@ -127,6 +134,10 @@ const AiCoach = {
         <div class="jarvis-voice-controls">
           <button id="jarvis-mic-trigger" class="jarvis-mic-btn ${this.isListening ? 'recording' : ''}" onclick="AiCoach.toggleMicrophone()">
             <span>${this.isListening ? "🛑 Arrêter l'écoute" : "🎙️ Parler à J.A.R.V.I.S."}</span>
+          </button>
+
+          <button class="chat-send-btn" onclick="AiCoach.handleSendMessage()" style="padding: 0.45rem 1rem; margin-right: 0.25rem;">
+            Transmettre 🚀
           </button>
 
           <button class="jarvis-stop-speech-btn" onclick="AiCoach.toggleVoiceSound()" title="Activer / Désactiver la voix">
@@ -193,10 +204,14 @@ const AiCoach = {
           </div>
 
           <div class="chat-input-bar">
-            <input type="text" id="ai-user-input" class="chat-input" placeholder="Posez une question à J.A.R.V.I.S. ou cliquez sur 'Parler à J.A.R.V.I.S.'..." onkeydown="if(event.key === 'Enter') AiCoach.handleSendMessage()">
-            <button class="chat-send-btn" onclick="AiCoach.handleSendMessage()">
-              Transmettre 🚀
+            <input type="file" id="ai-image-upload" accept="image/*" style="display: none;" onchange="AiCoach.handleImageSelection(event)">
+            <button class="header-btn" onclick="document.getElementById('ai-image-upload').click()" title="Joindre une capture d'écran" style="margin-right: 0.5rem; padding: 0.4rem 0.6rem;">
+              📎
             </button>
+            <div id="image-preview-container" style="display: ${this.currentImageData ? 'block' : 'none'}; margin-right: 0.5rem;">
+              <span style="font-size: 0.8rem; background: var(--cyan-primary); color: #fff; padding: 0.2rem 0.4rem; border-radius: 4px;">Image prête</span>
+            </div>
+            <input type="text" id="ai-user-input" class="chat-input" placeholder="Posez une question à J.A.R.V.I.S. ou cliquez sur 'Parler à J.A.R.V.I.S.'..." onkeydown="if(event.key === 'Enter') AiCoach.handleSendMessage()">
           </div>
         </div>
 
@@ -369,12 +384,17 @@ const AiCoach = {
     const input = document.getElementById("ai-user-input");
     if (!input || this.isThinking) return;
     const text = input.value.trim();
-    if (!text) return;
+    if (!text && !this.currentImageData) return;
 
     input.value = "";
     this.stopSpeaking();
 
-    this.chatHistory.push({ sender: "user", text });
+    const userMessage = { sender: "user", text };
+    if (this.currentImageData) {
+      userMessage.text = `*[Image envoyée]*\n\n` + userMessage.text;
+    }
+    
+    this.chatHistory.push(userMessage);
     this.isThinking = true;
     this.render();
     this.updateJarvisHUDState();
@@ -384,9 +404,13 @@ const AiCoach = {
     const settings = StorageManager.getSettings();
     let responseText = "";
 
+    const imagePayload = this.currentImageData ? { mime: this.currentImageMime, data: this.currentImageData } : null;
+    this.currentImageData = null;
+    this.currentImageMime = null;
+
     if (settings.geminiApiKey && settings.geminiApiKey.trim()) {
       try {
-        responseText = await this.callGeminiApi(text, settings.geminiApiKey.trim());
+        responseText = await this.callGeminiApi(text, settings.geminiApiKey.trim(), imagePayload);
       } catch (err) {
         console.error("Gemini error, fallback to Jarvis local core", err);
         const fallback = this.generateJarvisLocalResponse(text);
@@ -408,21 +432,48 @@ const AiCoach = {
     this.speakText(responseText);
   },
 
-  async callGeminiApi(userPrompt, apiKey) {
+  handleImageSelection(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64String = e.target.result.split(',')[1]; // Remove data URL prefix
+      this.currentImageData = base64String;
+      this.currentImageMime = file.type;
+      this.render(); // Re-render to show image preview tag
+      App.playSound("click");
+    };
+    reader.readAsDataURL(file);
+  },
+
+  async callGeminiApi(userPrompt, apiKey, imagePayload = null) {
     const systemInstruction = `Tu es J.A.R.V.I.S., l'intelligence artificielle ultra-avancée, élégante, polie et tactique, dédiée à la réussite de Julia pour son BTS SIO option SISR, sa certification Cisco CyberOps Associate (200-201 CBROPS) et sa matière CEJM.
 Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Appelle l'utilisatrice "Julia" ou "Major".
 - Sois d'un calme absolu, extrêmement compétent techniquement, avec un brin d'esprit et de dévouement.
 - Tu maîtrises les réseaux (Cisco IOS, VLAN 802.1Q, OSPF, NAT, ACL, DHCP, DNS), les systèmes (Windows Server AD DS, GPO, Linux bash/systemd), la cybersécurité (NIST, MITRE ATT&CK, Wireshark, Event IDs Windows), la méthode du syllogisme juridique en CEJM et le TOEIC.
+- Si une image est fournie, analyse-la avec attention pour aider Julia à réviser ou à faire un QCM dessus.
 - Fournis des réponses impeccablement structurées, claires et faciles à lire et à écouter oralement.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${apiKey}`;
+
+    const parts = [{ text: `${systemInstruction}\n\nQuestion de Julia : ${userPrompt}` }];
+    
+    if (imagePayload) {
+      parts.push({
+        inlineData: {
+          mimeType: imagePayload.mime,
+          data: imagePayload.data
+        }
+      });
+    }
 
     const payload = {
       contents: [
         {
           role: "user",
-          parts: [{ text: `${systemInstruction}\n\nQuestion de Julia : ${userPrompt}` }]
+          parts: parts
         }
       ],
       generationConfig: {
