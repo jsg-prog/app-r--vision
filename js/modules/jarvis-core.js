@@ -410,9 +410,9 @@ const AiCoach = {
 
     if (settings.geminiApiKey && settings.geminiApiKey.trim()) {
       try {
-        responseText = await this.callGeminiApi(text, settings.geminiApiKey.trim(), imagePayload);
+        responseText = await this.callGroqApi(text, settings.geminiApiKey.trim(), imagePayload);
       } catch (err) {
-        console.error("Gemini error, fallback to Jarvis local core", err);
+        console.error("Groq API error, fallback to Jarvis local core", err);
         const fallback = this.generateJarvisLocalResponse(text);
         responseText = `⚠️ *Note : Erreur de connexion API (${err.message}). Basculement sur le noyau local J.A.R.V.I.S. :*\n\n${fallback}`;
       }
@@ -447,7 +447,7 @@ const AiCoach = {
     reader.readAsDataURL(file);
   },
 
-  async callGeminiApi(userPrompt, apiKey, imagePayload = null) {
+  async callGroqApi(userPrompt, apiKey, imagePayload = null) {
     const systemInstruction = `Tu es J.A.R.V.I.S., l'intelligence artificielle ultra-avancée, élégante, polie et tactique, dédiée à la réussite de Julia pour son BTS SIO option SISR, sa certification Cisco CyberOps Associate (200-201 CBROPS) et sa matière CEJM.
 Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Appelle l'utilisatrice "Julia" ou "Major".
@@ -456,51 +456,50 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Si une image est fournie, analyse-la avec attention pour aider Julia à réviser ou à faire un QCM dessus.
 - Fournis des réponses impeccablement structurées, claires et faciles à lire et à écouter oralement.`;
 
-    // Construction du payload (avec ou sans image)
-    const parts = [{ text: `${systemInstruction}\n\nQuestion de Julia : ${userPrompt}` }];
+    const url = "https://api.groq.com/openai/v1/chat/completions";
+    
+    // Si l'utilisateur envoie une image, on doit utiliser le modèle multimodal LLaVA sur Groq
+    const modelName = imagePayload ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
+
+    const messages = [
+      { role: "system", content: systemInstruction }
+    ];
+
     if (imagePayload) {
-      parts.push({ inlineData: { mimeType: imagePayload.mime, data: imagePayload.data } });
+      messages.push({
+        role: "user",
+        content: [
+          { type: "text", text: `Question de Julia : ${userPrompt}` },
+          { type: "image_url", image_url: { url: `data:${imagePayload.mime};base64,${imagePayload.data}` } }
+        ]
+      });
+    } else {
+      messages.push({ role: "user", content: `Question de Julia : ${userPrompt}` });
     }
+
     const payload = {
-      contents: [{ role: "user", parts }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 1000 }
+      model: modelName,
+      messages: messages,
+      temperature: 0.7,
+      max_tokens: 1000
     };
 
-    // Cascade de modèles pour garantir la compatibilité avec toutes les clés gratuites (comptes persos et scolaires)
-    const MODELS_TO_TRY = ["gemini-1.5-flash", "gemini-pro", "gemini-1.5-flash-8b"];
-    let lastError = new Error("Aucun modèle disponible pour cette clé API.");
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
 
-    for (const modelName of MODELS_TO_TRY) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          const data = await res.json();
-          return data.candidates?.[0]?.content?.parts?.[0]?.text || "Désolé Julia, anomalie dans les flux de données.";
-        }
-        const errJson = await res.json().catch(() => ({}));
-        lastError = new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur ${modelName}`);
-        
-        // Si le modèle n'est pas trouvé/supporté, on continue la boucle pour essayer le suivant
-        if (!lastError.message.includes("not found") && !lastError.message.includes("not supported")) {
-          throw lastError; // Erreur de quota ou clé invalide -> on arrête tout
-        }
-      } catch(e) {
-        if (e.message && !e.message.includes("not found") && !e.message.includes("not supported") && !e.message.includes("fetch")) {
-          throw e;
-        }
-        lastError = e;
-      }
+    if (res.ok) {
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || "Désolé Julia, anomalie dans les flux de données Groq.";
     }
     
-    if (lastError.message.includes("not found") || lastError.message.includes("not supported")) {
-      throw new Error("Ta clé API bloque l'accès aux modèles. Si tu utilises une adresse e-mail du lycée (Google Workspace), les modèles Gemini sont bloqués par l'administrateur. Va sur Google AI Studio avec une adresse e-mail personnelle (@gmail.com) pour générer une nouvelle clé !");
-    }
-    throw lastError;
+    const errJson = await res.json().catch(() => ({}));
+    throw new Error(errJson.error?.message || `Erreur HTTP ${res.status} sur Groq API`);
   },
 
   generateJarvisLocalResponse(prompt) {
