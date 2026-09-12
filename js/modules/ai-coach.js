@@ -44,7 +44,7 @@ const AiCoach = {
     if (SpeechRecognition) {
       this.recognition = new SpeechRecognition();
       this.recognition.lang = "fr-FR";
-      this.recognition.continuous = false;
+      this.recognition.continuous = true;
       this.recognition.interimResults = false;
 
       this.recognition.onstart = () => {
@@ -54,14 +54,17 @@ const AiCoach = {
       };
 
       this.recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        const input = document.getElementById("ai-user-input");
-        if (input) {
-          input.value = transcript;
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            transcript += event.results[i][0].transcript + " ";
+          }
         }
-        this.isListening = false;
-        this.updateJarvisHUDState();
-        this.handleSendMessage();
+        const input = document.getElementById("ai-user-input");
+        if (input && transcript.trim() !== "") {
+          input.value = (input.value + " " + transcript).trim();
+        }
+        // J.A.R.V.I.S. n'envoie plus automatiquement. Il attend l'appui sur "Transmettre".
       };
 
       this.recognition.onerror = (event) => {
@@ -80,8 +83,9 @@ const AiCoach = {
   loadBestFrenchVoice() {
     if (!("speechSynthesis" in window)) return;
     const voices = window.speechSynthesis.getVoices();
-    // Prioritize natural French voices (Google français, Microsoft Paul/Henri/Julie/Hortense, Thomas)
-    this.currentVoice = voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Google") || v.name.includes("Natural") || v.name.includes("Paul") || v.name.includes("Henri")))
+    // Prioritize natural female French voices (Microsoft Julie, Microsoft Hortense)
+    this.currentVoice = voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Julie") || v.name.includes("Hortense") || v.name.includes("Denise")))
+      || voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Google") || v.name.includes("Natural")))
       || voices.find(v => v.lang.startsWith("fr"))
       || voices[0];
   },
@@ -412,7 +416,7 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Tu maîtrises les réseaux (Cisco IOS, VLAN 802.1Q, OSPF, NAT, ACL, DHCP, DNS), les systèmes (Windows Server AD DS, GPO, Linux bash/systemd), la cybersécurité (NIST, MITRE ATT&CK, Wireshark, Event IDs Windows), la méthode du syllogisme juridique en CEJM et le TOEIC.
 - Fournis des réponses impeccablement structurées, claires et faciles à lire et à écouter oralement.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
 
     const payload = {
       contents: [
