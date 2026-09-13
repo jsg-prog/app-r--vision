@@ -204,8 +204,11 @@ const AiCoach = {
           </div>
 
           <div class="chat-input-bar">
+            <button class="header-btn" onclick="AiCoach.captureAndAnalyzeScreen()" title="Analyser mon écran" style="margin-right: 0.5rem; padding: 0.4rem 0.6rem; background: var(--cyan-glow);">
+              📺 Écran
+            </button>
             <input type="file" id="ai-image-upload" accept="image/*" style="display: none;" onchange="AiCoach.handleImageSelection(event)">
-            <button class="header-btn" onclick="document.getElementById('ai-image-upload').click()" title="Joindre une capture d'écran" style="margin-right: 0.5rem; padding: 0.4rem 0.6rem;">
+            <button class="header-btn" onclick="document.getElementById('ai-image-upload').click()" title="Joindre une image" style="margin-right: 0.5rem; padding: 0.4rem 0.6rem;">
               📎
             </button>
             <div id="image-preview-container" style="display: ${this.currentImageData ? 'block' : 'none'}; margin-right: 0.5rem;">
@@ -439,13 +442,54 @@ const AiCoach = {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      const base64String = e.target.result.split(',')[1]; // Remove data URL prefix
-      this.currentImageData = base64String;
+      const base64Data = e.target.result.split(",")[1];
+      this.currentImageData = base64Data;
       this.currentImageMime = file.type;
-      this.render(); // Re-render to show image preview tag
-      App.playSound("click");
+      this.render();
+      App.playSound("flip");
     };
     reader.readAsDataURL(file);
+  },
+
+  async captureAndAnalyzeScreen() {
+    try {
+      // Demander à l'utilisateur de sélectionner l'écran/la fenêtre à capturer
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const base64Data = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+      
+      // Arrêter le partage d'écran
+      stream.getTracks().forEach(track => track.stop());
+
+      this.currentImageData = base64Data;
+      this.currentImageMime = "image/jpeg";
+      this.render();
+      App.playSound("flip");
+
+      // Déclencher automatiquement l'envoi
+      setTimeout(() => {
+        const inputField = document.getElementById("ai-user-input");
+        if (inputField) {
+            inputField.value = "Peux-tu analyser mon écran ?";
+            this.handleSendMessage();
+        }
+      }, 500);
+
+    } catch (err) {
+      console.error("Erreur capture écran :", err);
+      if (err.name !== "NotAllowedError") {
+         alert("Impossible de capturer l'écran. Vérifiez les permissions du navigateur.");
+      }
+    }
   },
 
   async callLLMApi(userPrompt, apiKey, imagePayload = null, useLMStudio = false) {
@@ -468,7 +512,23 @@ Si une image est fournie, analyse-la avec attention et structure la réponse sel
     
     if (useLMStudio) {
         url = "http://localhost:1234/v1/chat/completions";
-        modelsToTry = ["local-model"]; // LM Studio ignore généralement ce champ s'il n'y a qu'un seul modèle chargé
+        try {
+            // Vérifier quel modèle est actuellement chargé dans LM Studio
+            const modelRes = await fetch("http://localhost:1234/v1/models");
+            if (!modelRes.ok) throw new Error("Impossible de lister les modèles.");
+            const modelData = await modelRes.json();
+            
+            if (!modelData.data || modelData.data.length === 0) {
+                throw new Error("Aucun modèle chargé. Va dans l'onglet 'Loaded Instances' de LM Studio pour charger Llama 3 !");
+            }
+            // Prendre le premier modèle chargé
+            modelsToTry = [modelData.data[0].id];
+        } catch (e) {
+            if (e.message.includes("Aucun modèle chargé")) {
+                throw e; // Renvoyer ce message d'erreur précis à l'utilisateur
+            }
+            modelsToTry = ["local-model"]; // Fallback au cas où l'endpoint /models échoue mais que le serveur tourne
+        }
     }
 
     let lastError = new Error("Aucun modèle IA disponible.");
