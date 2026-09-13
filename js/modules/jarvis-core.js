@@ -504,7 +504,10 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 2. DYSCALCULIE : Si tu dois faire des calculs (ex: masques sous-réseaux IPv4), décompose CHAQUE étape très lentement. Ne saute aucune étape mathématique logique.
 3. AUTISME : Sois extrêmement explicite, prévisible et littéral. Pas de second degré ambigu. Si tu donnes des instructions, fais-le étape par étape de manière très structurée.
 
-Si une image est fournie, analyse-la avec attention et structure la réponse selon ces mêmes directives.`;
+
+Si une image est fournie, analyse-la avec attention et structure la réponse selon ces mêmes directives.
+
+RÈGLE ABSOLUE : Tu discutes en langage naturel. Il est STRICTEMENT INTERDIT de générer du code JSON, des appels de fonction ou de balises <tool_call>. Réponds directement en texte clair.`;
 
     // Définition de l'URL et des modèles selon l'API choisie
     let url = "https://api.groq.com/openai/v1/chat/completions";
@@ -569,7 +572,21 @@ Si une image est fournie, analyse-la avec attention et structure la réponse sel
 
         if (res.ok) {
           const data = await res.json();
-          return data.choices?.[0]?.message?.content || "Désolé Julia, anomalie dans les flux de données Groq.";
+          let content = data.choices?.[0]?.message?.content || "Désolé Julia, anomalie dans les flux de données.";
+          
+          // Fallback ultime : si Llama s'obstine à faire du tool calling en JSON
+          if (content.trim().startsWith('{')) {
+              try {
+                  const parsed = JSON.parse(content);
+                  if (parsed.name === "respond" && parsed.parameters && parsed.parameters.message) {
+                      content = parsed.parameters.message;
+                  }
+              } catch (e) {
+                  // Not valid JSON, keep as is
+              }
+          }
+          
+          return content;
         }
         
         const errJson = await res.json().catch(() => ({}));
