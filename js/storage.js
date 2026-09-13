@@ -22,7 +22,7 @@ const StorageManager = {
     },
     settings: {
       geminiApiKey: "",
-      useLMStudio: false
+      useLMStudio: false,
       soundEnabled: true,
       userName: "Étudiant SISR"
     },
