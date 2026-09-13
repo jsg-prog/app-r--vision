@@ -408,13 +408,14 @@ const AiCoach = {
     this.currentImageData = null;
     this.currentImageMime = null;
 
-    if (settings.geminiApiKey && settings.geminiApiKey.trim()) {
+    if (settings.useLMStudio || (settings.geminiApiKey && settings.geminiApiKey.trim())) {
       try {
-        responseText = await this.callGroqApi(text, settings.geminiApiKey.trim(), imagePayload);
+        responseText = await this.callLLMApi(text, settings.geminiApiKey?.trim() || "lm-studio", imagePayload, settings.useLMStudio);
       } catch (err) {
-        console.error("Groq API error, fallback to Jarvis local core", err);
+        console.error("API error, fallback to Jarvis local core", err);
         const fallback = this.generateJarvisLocalResponse(text);
-        responseText = `⚠️ *Note : Erreur de connexion API (${err.message}). Basculement sur le noyau local J.A.R.V.I.S. :*\n\n${fallback}`;
+        const apiName = settings.useLMStudio ? "LM Studio" : "Groq";
+        responseText = `⚠️ *Note : Erreur de connexion ${apiName} (${err.message}). Basculement sur le noyau local J.A.R.V.I.S. :*\n\n${fallback}`;
       }
     } else {
       // Offline Jarvis Core
@@ -447,7 +448,7 @@ const AiCoach = {
     reader.readAsDataURL(file);
   },
 
-  async callGroqApi(userPrompt, apiKey, imagePayload = null) {
+  async callLLMApi(userPrompt, apiKey, imagePayload = null, useLMStudio = false) {
     const systemInstruction = `Tu es J.A.R.V.I.S., l'intelligence artificielle ultra-avancée, élégante, polie et tactique, dédiée à la réussite de Julia pour son BTS SIO option SISR, sa certification Cisco CyberOps Associate (200-201 CBROPS) et sa matière CEJM.
 Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Appelle l'utilisatrice "Julia" ou "Major".
@@ -456,14 +457,16 @@ Adopte la personnalité de J.A.R.V.I.S. (style Tony Stark) :
 - Si une image est fournie, analyse-la avec attention pour aider Julia à réviser ou à faire un QCM dessus.
 - Fournis des réponses impeccablement structurées, claires et faciles à lire et à écouter oralement.`;
 
-    const url = "https://api.groq.com/openai/v1/chat/completions";
+    // Définition de l'URL et des modèles selon l'API choisie
+    let url = "https://api.groq.com/openai/v1/chat/completions";
+    let modelsToTry = imagePayload ? ["llama-3.2-11b-vision-preview", "llama-3.2-90b-vision-preview"] : ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama3-70b-8192", "llama3-8b-8192"];
     
-    // Modèles Groq avec fallback. Si le premier échoue, on tente le suivant.
-    const textModels = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama3-70b-8192", "llama3-8b-8192"];
-    const visionModels = ["llama-3.2-11b-vision-preview", "llama-3.2-90b-vision-preview"];
-    
-    const modelsToTry = imagePayload ? visionModels : textModels;
-    let lastError = new Error("Aucun modèle Groq disponible.");
+    if (useLMStudio) {
+        url = "http://localhost:1234/v1/chat/completions";
+        modelsToTry = ["local-model"]; // LM Studio ignore généralement ce champ s'il n'y a qu'un seul modèle chargé
+    }
+
+    let lastError = new Error("Aucun modèle IA disponible.");
 
     const messages = [
       { role: "system", content: systemInstruction }

@@ -402,6 +402,8 @@ const App = {
     if (!modal) return;
     const settings = StorageManager.getSettings();
     document.getElementById("settings-gemini-key").value = settings.geminiApiKey || "";
+    const lmStudioCheckbox = document.getElementById("settings-lmstudio");
+    if (lmStudioCheckbox) lmStudioCheckbox.checked = settings.useLMStudio || false;
     document.getElementById("settings-sound-toggle").checked = settings.soundEnabled;
 
     const voiceSelect = document.getElementById("settings-voice-select");
@@ -423,16 +425,32 @@ const App = {
     if (modal) modal.classList.remove("active");
   },
 
+  saveSettings() {
+    this.saveSettingsFromModal();
+  },
+
   saveSettingsFromModal() {
-    const key = document.getElementById("settings-gemini-key").value.trim();
-    const sound = document.getElementById("settings-sound-toggle").checked;
+    const keyEl = document.getElementById("settings-gemini-key");
+    const key = keyEl ? keyEl.value.trim() : "";
+
+    const lmStudioEl = document.getElementById("settings-lmstudio");
+    const useLMStudio = lmStudioEl ? lmStudioEl.checked : false;
+
+    const soundEl = document.getElementById("settings-sound") || document.getElementById("settings-sound-toggle");
+    const soundEnabled = soundEl ? soundEl.checked : true;
+
+    const usernameEl = document.getElementById("settings-username");
+    const userName = usernameEl ? (usernameEl.value.trim() || "Étudiant SISR") : "Étudiant SISR";
+
     const voiceSelect = document.getElementById("settings-voice-select");
     const voiceName = voiceSelect ? voiceSelect.value : "";
 
     StorageManager.saveSettings({
       geminiApiKey: key,
-      soundEnabled: sound,
-      jarvisVoiceName: voiceName
+      useLMStudio: useLMStudio,
+      soundEnabled: soundEnabled,
+      jarvisVoiceName: voiceName,
+      userName: userName
     });
 
     this.closeSettingsModal();
