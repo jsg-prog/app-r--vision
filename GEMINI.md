@@ -5,6 +5,10 @@ Ce fichier sert de mémoire permanente pour l'assistant Antigravity sur n'import
 ## Étudiant & Profil
 - **Nom/Prénom** : Julia (jsg-prog)
 - **Formation** : BTS SIO option SISR (Services Informatiques aux Organisations - Solutions d'Infrastructure, Systèmes et Réseaux)
+- **Profil cognitif** : Dyslexique, dyscalculique, TDAH, Autisme de type 1. L'agent et J.A.R.V.I.S doivent TOUJOURS adapter leurs réponses :
+  - **TDAH/Dyslexie** : Phrases très courtes, listes à puces, mise en évidence en gras, pas de gros blocs de texte.
+  - **Dyscalculie** : Décomposer *chaque* étape mathématique (ex: calculs IP) sans rien sauter.
+  - **Autisme Type 1** : Communication explicite, structurée, prévisible et littérale (pas de second degré).
 - **Objectifs clés** :
   1. Réussite des épreuves professionnelles du BTS SIO SISR (E4, E5).
   2. Obtention de la certification officielle **Cisco CyberOps Associate (200-201 CBROPS)**.
