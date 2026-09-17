@@ -25,12 +25,13 @@ L'application est une Single-Page Application (SPA) ultra-rapide, moderne et san
   - `style.css` : Thème global Cyberpunk, grille futuriste, typographie (Inter/JetBrains Mono).
   - `components.css` : Styles des composants (Quiz, Flashcards, HUD holographique J.A.R.V.I.S., Calculateur IP).
 - `js/data/`
-  - `sisr-database.js` : Questions, flashcards et cheat-sheet BTS SIO SISR (VLAN 802.1Q, Trunk, OSPF, NAT, DHCP DORA, AD DS, GPO, Sauvegarde 3-2-1).
+  - `sisr-database.js` : Questions, flashcards et cheat-sheet BTS SIO SISR (VLAN 802.1Q, Trunk, OSPF, NAT, DHCP DORA, AD DS, GPO, Sauvegarde 3-2-1, Tables de Routage, Longest Prefix Match, Distance Administrative, STP 802.1D / RSTP 802.1w, PortFast, BPDU Guard).
   - `cyberops-database.js` : Arborescence officielle complète NetAcad & ITExamAnswers (9 groupes de Checkpoint Modules 1 à 28 + Certification 200-201 CBROPS).
   - `cejm-database.js` : Les 6 thèmes officiels vulgarisés, atelier du syllogisme juridique, matrices SWOT/PESTEL/Porter.
   - `toeic-database.js` : Drills Part 5, vocabulaire Corporate IT, pièges de grammaire et faux-amis.
 - `js/modules/`
-  - `ai-coach.js` : Moteur **J.A.R.V.I.S. Vocal & Holographique** (Synthèse vocale Web Speech API, reconnaissance micro, HUD réacteur arc animé, mode hors-ligne immédiat + mode connecté Gemini API).
+  - `jarvis-core.js` : Moteur **J.A.R.V.I.S. Vocal & Holographique** (Synthèse vocale Web Speech API, reconnaissance micro, HUD réacteur arc animé, mode hors-ligne immédiat + mode connecté API).
+  - `sisr-training.js` : **Cours & Ateliers Visuels Adaptés** (Anatomie interactive show ip route, simulateur Longest Prefix Match décomposé, élection Root Bridge et rôles de ports STP).
   - `quiz-engine.js` : Moteur de quiz interactif avec chronomètre, score, feedback audio/visuel et explications contextuelles.
   - `flashcards.js` : Système de cartes mémoires avec retournement 3D et auto-évaluation.
   - `sisr-tools.js` : Calculateur IPv4 & Wildcard Mask temps réel + Cheat-sheet commandes Cisco/Linux/PowerShell.

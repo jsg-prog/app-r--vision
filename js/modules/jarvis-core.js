@@ -711,6 +711,63 @@ Router(config-router)# network 192.168.10.0 0.0.0.255 area 0
 Router(config-router)# passive-interface g0/0
 \`\`\`
 *Rappel tactique :* Le masque générique (Wildcard) est l'inverse exact du masque de sous-réseau. Pour un /24 (255.255.255.0), le wildcard est **0.0.0.255**.`;
+    if (p.includes("table de routage") || p.includes("routage") || p.includes("show ip route") || p.includes("longest") || p.includes("route")) {
+      return `Analyse des tables de routage IPv4 activée, Julia.
+
+### 🗺️ Protocole d'Aiguillage : La Table de Routage
+
+Voici les 3 règles absolues à retenir pour vos examens :
+
+1. **Règle n°1 : Longest Prefix Match (Masque le plus long)**
+   • Le routeur choisit TOUJOURS la route la plus précise.
+   • Un masque **/26** battra TOUJOURS un **/24**, même si la route en /24 est statique.
+
+2. **Règle n°2 : Distance Administrative (AD)**
+   • Utilisée UNIQUEMENT en cas d'égalité stricte de masque.
+   • Plus le chiffre est **PETIT**, plus la route est prioritaire :
+     - Connecté = **0**
+     - Statique = **1**
+     - EIGRP = **90**
+     - OSPF = **110**
+     - RIP = **120**
+
+3. **Ligne type Cisco décortiquée :**
+\`\`\`cisco
+O 172.16.1.0/24 [110/20] via 192.168.1.1
+\`\`\`
+   • **O** : Protocole OSPF.
+   • **[110/20]** : [Distance Administrative 110 / Métrique de coût 20].
+   • **via 192.168.1.1** : Prochain saut (adresse IP du voisin).
+
+Vos paquets sont prêts à être routés sans erreur.`;
+    }
+
+    if (p.includes("stp") || p.includes("spanning") || p.includes("tree") || p.includes("root bridge") || p.includes("bpdu") || p.includes("portfast")) {
+      return `Activation du module Spanning Tree Protocol (IEEE 802.1D / 802.1w).
+
+### 🌳 Maîtrise Tactique du Protocole STP
+
+Bonjour Julia. Voici l'essentiel pour sécuriser vos points sur la commutation :
+
+1. **Pourquoi STP ?**
+   • Les trames Ethernet **n'ont pas de champ TTL**.
+   • Sans STP, les boucles créent des **tempêtes de broadcast** mortelles qui saturent les switches à 100%.
+   • STP bloque logiquement les ports redondants pour supprimer la boucle.
+
+2. **Élection du Root Bridge en 2 étapes :**
+   • **Étape 1 :** La **Priorité STP** la plus faible gagne (par défaut 32768, ex: 4096 bat 32768).
+   • **Étape 2 :** En cas d'égalité, l'**adresse MAC** la plus petite gagne.
+
+3. **Les 3 Rôles de Ports :**
+   • **Root Port (RP) :** 1 seul par switch non-racine, chemin le moins cher vers la racine.
+   • **Designated Port (DP) :** Tous les ports du Root Bridge sont Designated (en transmission).
+   • **Alternate / Blocked :** Port bloqué pour couper la boucle physique.
+
+4. **Sécurité vitale :**
+   • **PortFast :** Passe en Forwarding instantanément (pour PC et serveurs uniquement).
+   • **BPDU Guard :** Désactive le port en \`err-disable\` si un BPDU pirate est reçu.
+
+Souhaitez-vous faire un exercice d'élection de Root Bridge ensemble ?`;
     }
 
     // Default Jarvis response

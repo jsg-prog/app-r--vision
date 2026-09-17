@@ -173,6 +173,12 @@ const App = {
         this.renderToolsView();
         break;
 
+      case "sisr-training":
+        titleEl.textContent = "Cours & Ateliers Visuels Adaptés • SISR";
+        subEl.textContent = "Tables de routage, Longest Prefix Match et Spanning Tree Protocol (STP)";
+        SisrTraining.init(document.getElementById("view-sisr-training"));
+        break;
+
       case "quiz":
         titleEl.textContent = "Moteur de Quizz & Évaluation";
         subEl.textContent = "Testez vos réflexes en conditions d'examen";
@@ -310,14 +316,33 @@ const App = {
             Maîtrise les architectures réseaux Cisco, les services d'infrastructure indispensables (DNS, DHCP, AD DS), la sécurité périmétrique et la supervision.
           </p>
           <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
-            <button class="header-btn primary" onclick="App.startSisrQuiz('all')">
+            <button class="header-btn primary" onclick="App.renderView('sisr-training')">
+              📖 Cours & Ateliers Visuels (STP & Routage) ⚡
+            </button>
+            <button class="header-btn" onclick="App.startSisrQuiz('all')">
               🎯 Lancer le Quizz SISR (${questions.length} questions)
             </button>
             <button class="header-btn" onclick="App.startSisrFlashcards()">
               🗂️ Réviser les Flashcards SISR
             </button>
             <button class="header-btn" onclick="App.renderView('tools')">
-              🧮 Ouvrir le Calculateur IP & Cheat-Sheet
+              🧮 Calculateur IP & Cheat-Sheet
+            </button>
+          </div>
+        </div>
+
+        <!-- NEW VISUAL TRAINING CALLOUT -->
+        <div class="action-hero-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(16, 185, 129, 0.2)); border-color: var(--cyan-primary); margin-bottom: 1.75rem; cursor: pointer;" onclick="App.renderView('sisr-training')">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div class="hero-tag" style="background: var(--cyan-primary); color: #070a12; font-weight: 800;">NOUVEAU • ATELIER VISUEL ADAPTÉ</div>
+              <h3 style="margin-top: 0.35rem; font-size: 1.2rem;">🗺️ Tables de Routage & 🌳 Spanning Tree Protocol (STP) Pas-à-Pas</h3>
+              <p style="margin: 0; font-size: 0.88rem; color: var(--text-highlight);">
+                Anatomie d'une ligne Cisco, Longest Prefix Match décomposé, élection du Root Bridge sans prise de tête et simulateurs guidés.
+              </p>
+            </div>
+            <button class="header-btn primary" style="box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);">
+              Ouvrir l'Atelier ➔
             </button>
           </div>
         </div>
