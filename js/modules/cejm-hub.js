@@ -1,8 +1,8 @@
 /* ==========================================================================
    CEJM HUB MODULE
    Culture Économique, Juridique et Managériale
-   Conforme au Référentiel National BTS & Manuel Foucher Tome Unique (1re & 2e années)
-   Rubrique Définitions par Thème, Quizz 20+ Questions par Thème, Syllogisme
+   Conforme STRICTEMENT au Référentiel National BTS & Manuel Foucher Tome Unique
+   Organisation par Thèmes & Questions Officielles du Bulletin Officiel (BO)
    ========================================================================== */
 
 const CejmHub = {
@@ -31,16 +31,16 @@ const CejmHub = {
         <!-- Hero Banner -->
         <div class="cejm-hero-banner">
           <div class="hero-tag" style="background: rgba(139, 92, 246, 0.2); color: #c084fc; border-color: rgba(139, 92, 246, 0.4);">
-            ⚖️ Référentiel National BTS • Manuel Foucher Tome Unique (1re & 2e années)
+            ⚖️ Référentiel Officiel BTS SIO & Manuel Foucher Tome Unique (Programme National)
           </div>
-          <h2 style="margin: 0.75rem 0 0.5rem;">CEJM : Hub des Notions, Définitions & Quizz</h2>
+          <h2 style="margin: 0.75rem 0 0.5rem;">CEJM & CEJMA : Le Guide Officiel 100% Conforme</h2>
           <p style="font-size: 0.92rem; line-height: 1.6; max-width: 850px;">
-            La CEJM adaptée au BTS SIO : <strong>Rubrique Définitions officielles</strong> pour chaque thème, banque complète de <strong>20 questions de quizz par thème (${totalQuizzes} questions au total)</strong>, fiches mémo et atelier du <strong>syllogisme juridique</strong>.
+            Structuré rigoureusement selon les <strong>6 thèmes et questions officielles du Bulletin Officiel (BO)</strong>. Toutes les notions du livre <strong>Foucher Tome Unique</strong> sont adaptées au BTS SIO avec leurs applications Tech (Cloud, RGPD, cybersécurité, SLA, STAD), accompagnées de <strong>20 questions de quizz par thème (120 au total)</strong>.
           </p>
 
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem;">
             <button class="header-btn primary" style="background: linear-gradient(135deg, var(--purple-primary), #6366f1);" onclick="CejmHub.scrollToSection('rubrique-definitions-section')">
-              📖 Rubrique Définitions par Thème (${totalNotions})
+              📖 Rubrique Définitions par Thème (${totalNotions} Notions)
             </button>
             <button class="header-btn" onclick="CejmHub.startQuiz()">
               🎯 Grand Quizz Général (${totalQuizzes} Questions)
@@ -55,24 +55,24 @@ const CejmHub = {
         </div>
 
         <!-- ==================================================================
-             RUBRIQUE DÉFINITIONS PAR THÈME (OFFICIEL LIVRE FOUCHER)
+             RUBRIQUE DÉFINITIONS OFFICIELLES PAR THÈME & QUESTIONS BO
              ================================================================== -->
         <div id="rubrique-definitions-section" style="background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: var(--radius-xl); padding: 1.75rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);">
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
             <div>
               <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
                 <span style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: #c084fc; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid rgba(139, 92, 246, 0.4); font-weight: 600;">
-                  Manuel Foucher Tome Unique
+                  Manuel Foucher Tome Unique • Conforme BO
                 </span>
                 <span style="font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid rgba(56, 189, 248, 0.3);">
                   ${notions.length} notion(s) affichée(s)
                 </span>
               </div>
               <h3 style="font-size: 1.3rem; color: #c084fc; display: flex; align-items: center; gap: 0.5rem; margin: 0.4rem 0 0.2rem;">
-                <span>📖</span> Rubrique Définitions par Thème
+                <span>📖</span> Rubrique Définitions du Référentiel Officiel
               </h3>
               <p style="font-size: 0.86rem; color: var(--text-muted); margin: 0;">
-                Sélectionnez un thème pour afficher ses notions clés avec base juridique/auteur et cas concret Tech.
+                Chaque définition est rattachée à sa question officielle du programme, avec sa base légale/auteur et son cas concret Tech.
               </p>
             </div>
 
@@ -81,7 +81,7 @@ const CejmHub = {
               <input 
                 type="text" 
                 id="cejm-search-input" 
-                placeholder="🔍 Rechercher une notion, un article, un auteur..."
+                placeholder="🔍 Rechercher une notion, un auteur, un article de loi..."
                 value="${this.searchQuery}"
                 oninput="CejmHub.handleSearch(this.value)"
                 style="width: 100%; padding: 0.6rem 0.9rem; background: rgba(7, 10, 18, 0.85); border: 1px solid var(--border-glow); border-radius: 8px; color: #fff; font-size: 0.85rem;"
@@ -107,14 +107,30 @@ const CejmHub = {
             }).join("")}
           </div>
 
+          <!-- If a specific theme is filtered, show its official underlying questions -->
+          ${this.currentThemeFilter !== 'all' ? (() => {
+            const currentThemeObj = themes.find(t => t.id === this.currentThemeFilter);
+            if (!currentThemeObj || !currentThemeObj.questions) return "";
+            return `
+              <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.84rem;">
+                <span style="color: #c084fc; font-weight: 700;">📌 Questions officielles du programme traitées dans ce thème :</span>
+                <ul style="margin: 0.4rem 0 0 1.25rem; padding: 0; color: #cbd5e1; line-height: 1.5;">
+                  ${currentThemeObj.questions.map(q => `<li>${q.title}</li>`).join("")}
+                </ul>
+              </div>
+            `;
+          })() : ""}
+
           <!-- Notions Grid List -->
           <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;">
             ${notions.length > 0 ? notions.map(notion => {
               const theme = themes.find(t => t.id === notion.themeId) || {};
+              const questionObj = (theme.questions || []).find(q => q.id === notion.questionId);
+
               return `
                 <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.3rem; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.borderColor='rgba(139, 92, 246, 0.6)'" onmouseout="this.style.borderColor='var(--border-subtle)'">
                   <div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.4rem;">
                       <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; background: rgba(139, 92, 246, 0.15); color: #c084fc; border-radius: 4px; border: 1px solid rgba(139, 92, 246, 0.3); font-weight: 600;">
                         ${theme.icon || "📚"} ${notion.themeId.toUpperCase()}
                       </span>
@@ -122,6 +138,12 @@ const CejmHub = {
                         ${notion.source}
                       </span>
                     </div>
+
+                    ${questionObj ? `
+                      <div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 0.5rem; font-weight: 600;">
+                        ${questionObj.title}
+                      </div>
+                    ` : ""}
 
                     <h4 style="font-size: 1.05rem; color: #fff; margin-bottom: 0.6rem; font-weight: 700;">
                       ${notion.term}
@@ -134,7 +156,7 @@ const CejmHub = {
 
                   ${notion.example ? `
                     <div style="background: rgba(7, 10, 18, 0.85); border-radius: 6px; padding: 0.65rem 0.8rem; font-size: 0.78rem; color: #94a3b8; border-left: 3px solid #38bdf8;">
-                      <span style="color: #38bdf8; font-weight: 600;">💻 Exemple d'application Tech :</span> ${notion.example}
+                      <span style="color: #38bdf8; font-weight: 600;">💻 Cas d'application Tech :</span> ${notion.example}
                     </div>
                   ` : ""}
                 </div>
@@ -148,10 +170,10 @@ const CejmHub = {
         </div>
 
         <!-- ==================================================================
-             ENTRAÎNEMENT PAR THÈME (20 QUESTIONS PAR THÈME)
+             ENTRAÎNEMENT PAR THÈME (20 QUESTIONS PAR THÈME = 120 TOTAL)
              ================================================================== -->
         <h3 style="margin-bottom: 1rem; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
-          <span>📚</span> Entraînement Ciblé par Thème (Au moins 20 Questions / Thème)
+          <span>📚</span> Entraînement Ciblé par Thème (20 Questions / Thème)
         </h3>
         <div class="actions-grid" style="margin-bottom: 2rem;">
           ${themes.filter(t => t.id !== 'all').map(theme => {
