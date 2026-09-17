@@ -616,26 +616,159 @@ RÈGLE ABSOLUE : Tu discutes en langage naturel. Il est STRICTEMENT INTERDIT de 
   generateJarvisLocalResponse(prompt) {
     const p = prompt.toLowerCase();
 
-    if (p.includes("syllogisme") || p.includes("cejm")) {
+    // 1. CEJM : Syllogisme Juridique
+    if (p.includes("syllogisme")) {
       return `À vos ordres, Julia. Voici le protocole de résolution juridique par syllogisme, indispensable pour sécuriser vos points en CEJM :
 
 ### ⚖️ Protocole du Syllogisme Juridique
 
-1. **La Majeure (La Loi) :**
-   Énoncer le principe de droit général sans mentionner les protagonistes du sujet.
-   *Formule recommandée :* "En vertu de l'article 1231-1 du Code civil, toute inexécution d'une obligation contractuelle engage la responsabilité du débiteur si elle cause un dommage."
+1. **La Majeure (La Règle de droit abstraite) :**
+   Énoncer le principe légal général sans citer les noms du sujet.
+   *Exemple :* "En vertu de l'article 1231-1 du Code civil, toute inexécution contractuelle engage la responsabilité du débiteur et l'oblige à réparer le dommage causé."
 
-2. **La Mineure (Les Faits de l'Espèce) :**
-   Relier directement les faits précis du cas concret aux conditions de la loi.
-   *Formule recommandée :* "En l'espèce, le prestataire d'infogérance n'a pas appliqué le correctif de sécurité prévu au contrat d'assistance, ce qui a permis l'intrusion."
+2. **La Mineure (L'Application aux Faits) :**
+   Relier directement les faits précis du cas d'examen aux conditions de la règle.
+   *Exemple :* "En l'espèce, le prestataire d'infogérance s'est engagé à restaurer le serveur sous 4h mais a mis 48h, bloquant l'activité du client."
 
-3. **La Conclusion (La Solution) :**
+3. **La Conclusion (La Solution juridique) :**
    Trancher la question posée sans ambiguïté.
-   *Formule recommandée :* "Par conséquent, la société cliente est fondée à exiger des dommages et intérêts pour réparer son préjudice."
-
-Souhaitez-vous que nous traitions un cas d'entraînement ensemble ?`;
+   *Exemple :* "Par conséquent, le client est juridiquement fondé à obtenir des dommages et intérêts pour compenser son préjudice d'exploitation."`;
     }
 
+    // 2. CEJM : RSE & Parties Prenantes (Thème 2)
+    if (p.includes("rse") || p.includes("responsabilite societale") || p.includes("partie prenante") || p.includes("parties prenantes")) {
+      return `Analyse des doctrines managériales et RSE activée, Julia.
+
+### 🌿 RSE & Théorie des Parties Prenantes (Livre Foucher)
+
+1. **RSE (Responsabilité Sociétale des Entreprises) :**
+   • Intégration volontaire des préoccupations sociales et écologiques aux activités commerciales.
+   • **Loi PACTE (2019) :** Permet d'intégrer une *raison d'être* ou de devenir une *entreprise à mission*.
+   • Démarche concrète Tech : **Green IT** (allongement de vie des serveurs, datacenters à énergie renouvelable).
+
+2. **Parties Prenantes (Stakeholders de Freeman) :**
+   • **Internes :** Salariés, dirigeants, représentants du personnel.
+   • **Externes :** Clients, fournisseurs de matériel, banques, État, collectivités, ONG environnementales.
+   • Le management doit arbitrer les intérêts parfois divergents de ces acteurs.`;
+    }
+
+    // 3. CEJM : Porter (5 forces, stratégies génériques, chaîne de valeur) (Thèmes 2 & 6)
+    if (p.includes("porter") || p.includes("5 forces") || p.includes("strategie generique") || p.includes("chaine de valeur")) {
+      return `Chargement de la matrice stratégique de Michael Porter, Julia.
+
+### 🎯 Les Outils Stratégiques de Michael Porter
+
+1. **Les 3 Stratégies Génériques (DAS) :**
+   • **Domination par les coûts :** Proposer les prix les plus bas grâce à la taille et aux volumes (ex: Free).
+   • **Différenciation :** Proposer une valeur ajoutée reconnue (qualité, sécurité) pour vendre plus cher (ex: Apple, Cisco).
+   • **Focalisation (Niche) :** Viser un marché très étroit et hyperspécialisé (ex: cryptographie souveraine pour armées).
+
+2. **Les 5 Forces (+1) Concurrentielles :**
+   • 1. Rivalité entre concurrents directs.
+   • 2. Pouvoir de négociation des clients.
+   • 3. Pouvoir de négociation des fournisseurs (ex: monopole Nvidia).
+   • 4. Menace des nouveaux entrants.
+   • 5. Menace des produits de substitution (ex: Cloud remplaçant les serveurs sur site).
+   • *+1. L'État et les régulateurs (normes imposées).*
+
+3. **La Chaîne de Valeur :**
+   • Découpe l'entreprise entre activités principales (production, logistique, SAV) et activités de soutien (SI, RH, R&D).`;
+    }
+
+    // 4. CEJM : Mintzberg & Fayol (Organisation & Structures) (Thème 3)
+    if (p.includes("mintzberg") || p.includes("fayol") || p.includes("structure") || p.includes("coordination")) {
+      return `Analyse des structures organisationnelles en cours, Julia.
+
+### ⚙️ Théorie des Organisations : Mintzberg & Fayol
+
+1. **Principes d'Henri Fayol :**
+   • **Unité de commandement :** Un salarié ne doit recevoir d'ordres que d'un SEUL chef pour éviter le désordre.
+   • Structure hiérarchique pyramidale : claire et disciplinée, mais rigide.
+
+2. **Les 6 Mécanismes de Coordination de Mintzberg :**
+   • **Ajustement mutuel :** Communication informelle directe entre pairs.
+   • **Supervision directe :** Ordres d'un supérieur hiérarchique.
+   • **Standardisation des procédés :** Fiches de procédures, scripts d'installation.
+   • **Standardisation des résultats :** Objectifs chiffrés (ex: 99.9% de disponibilité).
+   • **Standardisation des qualifications :** Diplômes, certifications Cisco CCNA ou CyberOps.
+   • **Standardisation des normes :** Culture d'entreprise partagée.`;
+    }
+
+    // 5. CEJM : Droit du travail & Subordination (Thème 5)
+    if (p.includes("subordination") || p.includes("contrat de travail") || p.includes("pouvoir de l'employeur") || p.includes("licenciement") || p.includes("rupture")) {
+      return `Consultation du Code du travail et de la jurisprudence sociale, Julia.
+
+### 👥 Droit Social : Contrat de Travail & Pouvoirs de l'Employeur
+
+1. **Le Lien de Subordination Juridique (Arrêt Sté Générale 1996) :**
+   • Critère déterminant du contrat de travail.
+   • Pouvoir de l'employeur de **donner des ordres**, d'en **contrôler l'exécution** et de **sanctionner les manquements**.
+
+2. **Les 3 Pouvoirs de l'Employeur :**
+   • **Direction :** Organiser le travail et choisir les solutions techniques.
+   • **Réglementaire :** Rédiger le règlement intérieur (obligatoire dès 50 salariés).
+   • **Disciplinaire :** Avertissement, blâme, mise à pied, licenciement. *Rappel : amendes financières formellement interdites !*
+
+3. **Rupture du Contrat :**
+   • **Rupture conventionnelle :** Accord amiable bilatéral homologué par la DREETS.
+   • **Licenciement :** Décision unilatérale qui exige une Cause Réelle et Sérieuse.`;
+    }
+
+    // 6. CEJM : RGPD & STAD (Thème 4)
+    if (p.includes("rgpd") || p.includes("stad") || p.includes("cnil") || p.includes("donnees personnelles") || p.includes("dpo")) {
+      return `Activation du protocole juridique numérique et RGPD, Julia.
+
+### 💻 Droit du Numérique, RGPD & Infractions STAD
+
+1. **Principes Clés du RGPD (Règlement UE 2016/679) :**
+   • **Licéité, loyauté et transparence :** Consentement explicite des utilisateurs.
+   • **Minimisation des données :** Collecter uniquement le strict nécessaire au service.
+   • **Sécurité & Notification CNIL :** Alerter la CNIL sous **72 heures** en cas de violation de données personnelles.
+
+2. **Propriété Intellectuelle (Art. L. 113-9 CPI) :**
+   • Les droits patrimoniaux sur les logiciels créés par un salarié dans l'exercice de ses fonctions appartiennent automatiquement à **l'employeur**.
+
+3. **Atteinte aux STAD (Art. 323-1 Code pénal) :**
+   • L'accès ou le maintien frauduleux dans un système informatique est un délit pénal puni d'amendes et d'emprisonnement, même sans intention destructrice.`;
+    }
+
+    // 7. CEJM : GEPP, Télétravail & Déconnexion (Thème 5)
+    if (p.includes("gepp") || p.includes("gpec") || p.includes("teletravail") || p.includes("deconnexion")) {
+      return `Analyse des mutations contemporaines du travail, Julia.
+
+### 📱 GEPP, Télétravail & Droit à la Déconnexion
+
+1. **GEPP (Gestion des Emplois et des Parcours Professionnels) :**
+   • Démarche RH prospective pour anticiper l'impact des évolutions technologiques (IA, Cloud) sur les métiers et planifier les formations requises.
+
+2. **Régime Juridique du Télétravail :**
+   • Encadré par accord collectif ou charte d'entreprise.
+   • Égalité stricte de traitement avec les salariés sur site (droits, tickets resto).
+   • Prise en charge des équipements informatiques par l'employeur.
+
+3. **Droit à la Déconnexion :**
+   • Obligation pour l'entreprise de garantir que le salarié ne soit pas contraint de traiter des courriels ou appels professionnels en dehors de ses heures de travail.`;
+    }
+
+    // 8. CEJM : Valeur Ajoutée & Asymétrie d'information (Thème 1)
+    if (p.includes("valeur ajoutee") || p.includes("asymetrie") || p.includes("alea moral") || p.includes("selection adverse") || p.includes("externalite")) {
+      return `Chargement des mécanismes économiques fondamentaux, Julia.
+
+### 🏢 Économie d'Entreprise : VA & Défaillances de Marché
+
+1. **Valeur Ajoutée (VA) :**
+   • \`VA = Chiffre d'Affaires (CA) - Consommations Intermédiaires (CI)\`.
+   • Répartie entre salariés (salaires), État (impôts), banques (intérêts), associés (dividendes) et entreprise (autofinancement).
+
+2. **Asymétrie d'Information :**
+   • **Sélection adverse (Akerlof - ex-ante) :** Informations cachées avant l'accord (produits défectueux chassant les bons).
+   • **Aléa moral (Stiglitz - ex-post) :** Prise de risques inconsidérés après signature en se sachant couvert ou protégé.
+
+3. **Externalités (Arthur Pigou) :**
+   • Impact positif ou négatif d'une activité économique sur un tiers sans compensation financière (ex négatif : empreinte carbone des datacenters).`;
+    }
+
+    // 9. SISR : VLANs & Trunk 802.1Q
     if (p.includes("vlan") || p.includes("trunk") || p.includes("802.1q") || p.includes("inter-vlan")) {
       return `Analyse des architectures de commutation Cisco en cours...
 
@@ -665,6 +798,7 @@ Router(config-subif)# ip address 192.168.20.254 255.255.255.0
 Tous les paquets traversant ce lien seront étiquetés avec le VLAN ID sur 12 bits. Vos communications sont opérationnelles.`;
     }
 
+    // 10. CyberOps : Event IDs & SOC
     if (p.includes("event id") || p.includes("cyberops") || p.includes("soc") || p.includes("alerte")) {
       return `Activation du module d'analyse SOC Cisco CyberOps 200-201.
 
@@ -684,6 +818,7 @@ Pour vos examens CyberOps, Julia, ces identifiants de sécurité doivent être m
 Je surveille vos flux en temps réel. Quelle menace souhaitez-vous analyser ensuite ?`;
     }
 
+    // 11. TOEIC
     if (p.includes("toeic") || p.includes("anglais") || p.includes("english")) {
       return `Very well, Julia. Initializing TOEIC oral speed drill protocol.
 
@@ -696,6 +831,7 @@ Je surveille vos flux en temps réel. Quelle menace souhaitez-vous analyser ensu
 **Règle de rapidité Part 5 :** Moins de 30 secondes par phrase. Éliminez immédiatement les formes grammaticalement impossibles. Ready for the next drill?`;
     }
 
+    // 12. SISR : OSPF
     if (p.includes("ospf")) {
       return `Déploiement des tables de routage dynamique OSPFv2, Julia.
 
@@ -711,6 +847,9 @@ Router(config-router)# network 192.168.10.0 0.0.0.255 area 0
 Router(config-router)# passive-interface g0/0
 \`\`\`
 *Rappel tactique :* Le masque générique (Wildcard) est l'inverse exact du masque de sous-réseau. Pour un /24 (255.255.255.0), le wildcard est **0.0.0.255**.`;
+    }
+
+    // 13. SISR : Table de Routage & LPM
     if (p.includes("table de routage") || p.includes("routage") || p.includes("show ip route") || p.includes("longest") || p.includes("route")) {
       return `Analyse des tables de routage IPv4 activée, Julia.
 
@@ -742,6 +881,7 @@ O 172.16.1.0/24 [110/20] via 192.168.1.1
 Vos paquets sont prêts à être routés sans erreur.`;
     }
 
+    // 14. SISR : STP / 802.1D / 802.1w
     if (p.includes("stp") || p.includes("spanning") || p.includes("tree") || p.includes("root bridge") || p.includes("bpdu") || p.includes("portfast")) {
       return `Activation du module Spanning Tree Protocol (IEEE 802.1D / 802.1w).
 

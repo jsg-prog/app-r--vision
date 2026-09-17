@@ -30,16 +30,16 @@ L'application est une Single-Page Application (SPA) et **Progressive Web App (PW
 - `js/data/`
   - `sisr-database.js` : Questions, flashcards et cheat-sheet BTS SIO SISR (VLAN 802.1Q, Trunk, OSPF, NAT, DHCP DORA, AD DS, GPO, Sauvegarde 3-2-1, Tables de Routage, Longest Prefix Match, Distance Administrative, STP 802.1D / RSTP 802.1w, PortFast, BPDU Guard).
   - `cyberops-database.js` : Arborescence officielle complète NetAcad & ITExamAnswers (9 groupes de Checkpoint Modules 1 à 28 + Certification 200-201 CBROPS).
-  - `cejm-database.js` : Les 6 thèmes officiels vulgarisés, atelier du syllogisme juridique, matrices SWOT/PESTEL/Porter.
+  - `cejm-database.js` : Manuel de référence officiel **CEJM Tome Unique 1re et 2e années - Éditions Foucher** (les 6 thèmes complets, glossaire officiel de 24 notions avec sources juridiques et exemples Tech, 18 flashcards, 12 quiz d'examen, atelier du syllogisme juridique, matrices SWOT/PESTEL/Porter/Chaîne de valeur).
   - `toeic-database.js` : Drills Part 5, vocabulaire Corporate IT, pièges de grammaire et faux-amis.
 - `js/modules/`
-  - `jarvis-core.js` : Moteur **J.A.R.V.I.S. Vocal & Holographique** (Synthèse vocale Web Speech API, reconnaissance micro, HUD réacteur arc animé, mode hors-ligne immédiat + mode connecté API).
+  - `jarvis-core.js` : Moteur **J.A.R.V.I.S. Vocal & Holographique** (Synthèse vocale Web Speech API, reconnaissance micro, HUD réacteur arc animé, mode hors-ligne immédiat + mode connecté API, déclencheurs locaux SISR, CyberOps et CEJM Foucher).
   - `sisr-training.js` : **Cours & Ateliers Visuels Adaptés** (Anatomie interactive show ip route, simulateur Longest Prefix Match décomposé, élection Root Bridge et rôles de ports STP).
   - `quiz-engine.js` : Moteur de quiz interactif avec chronomètre, score, feedback audio/visuel et explications contextuelles.
   - `flashcards.js` : Système de cartes mémoires avec retournement 3D et auto-évaluation.
   - `sisr-tools.js` : Calculateur IPv4 & Wildcard Mask temps réel + Cheat-sheet commandes Cisco/Linux/PowerShell.
   - `cyberops-hub.js` : Hub Cisco CyberOps avec liens directs vers ITExamAnswers et importateur de questions d'évaluations.
-  - `cejm-hub.js` : Hub CEJM et atelier syllogisme juridique.
+  - `cejm-hub.js` : Hub CEJM, glossaire interactif Foucher avec recherche temps réel, filtres thématiques et atelier syllogisme juridique.
   - `toeic-hub.js` : Speed drills et flashcards TOEIC.
 - `js/storage.js` : Gestionnaire de persistance LocalStorage avec export/import JSON.
 
