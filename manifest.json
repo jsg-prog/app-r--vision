@@ -1,0 +1,19 @@
+{
+  "name": "Cyber-SISR & CyberOps Hub",
+  "short_name": "CyberSISR",
+  "description": "Plateforme de révision BTS SIO SISR, Cisco CyberOps, CEJM et TOEIC avec Coach J.A.R.V.I.S. vocal",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070a12",
+  "theme_color": "#06b6d4",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%23070a12'/><circle cx='50' cy='50' r='40' stroke='%2306b6d4' stroke-width='4' fill='none'/><path d='M50 20 L50 40 M50 60 L50 80 M20 50 L40 50 M60 50 L80 50' stroke='%2306b6d4' stroke-width='4' stroke-linecap='round'/><circle cx='50' cy='50' r='12' fill='%238b5cf6'/><text x='50' y='55' font-size='16' text-anchor='middle' fill='%23ffffff' font-weight='bold' font-family='sans-serif'>⚡</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "utilities"]
+}

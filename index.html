@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cyber-SISR & CyberOps Hub • Plateforme de Révision BTS SIO & Certifications</title>
   <meta name="description" content="Plateforme complète et interactive de révision pour le BTS SIO SISR, la certification Cisco CyberOps Associate (200-201 CBROPS), la CEJM et le TOEIC avec Coach IA intégré.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#06b6d4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CyberSISR">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
 </head>
@@ -89,10 +94,19 @@
       </div>
     </aside>
 
+    <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="App.closeSidebar()"></div>
+
     <!-- MAIN APP WRAPPER -->
     <main id="main-wrapper">
       <!-- TOP BAR -->
       <header class="top-bar">
+        <button id="mobile-menu-btn" class="mobile-menu-toggle" onclick="App.toggleSidebar()" aria-label="Ouvrir le menu de révision">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+
         <div class="top-bar-left">
           <div class="page-title-group">
             <h2 id="header-title">Tableau de Bord des Révisions</h2>
@@ -149,6 +163,30 @@
           <div id="flashcards-container-root"></div>
         </section>
       </div>
+
+      <!-- MOBILE BOTTOM NAVIGATION (THUMB ACCESS) -->
+      <nav id="mobile-bottom-nav" class="mobile-bottom-nav">
+        <button class="bottom-nav-item active" data-view="dashboard" onclick="App.renderView('dashboard')">
+          <span class="bottom-nav-icon">📊</span>
+          <span class="bottom-nav-label">Bord</span>
+        </button>
+        <button class="bottom-nav-item" data-view="sisr" onclick="App.renderView('sisr')">
+          <span class="bottom-nav-icon">🖥️</span>
+          <span class="bottom-nav-label">SISR</span>
+        </button>
+        <button class="bottom-nav-item" data-view="cyberops" onclick="App.renderView('cyberops')">
+          <span class="bottom-nav-icon">🛡️</span>
+          <span class="bottom-nav-label">CyberOps</span>
+        </button>
+        <button class="bottom-nav-item" data-view="cejm" onclick="App.renderView('cejm')">
+          <span class="bottom-nav-icon">⚖️</span>
+          <span class="bottom-nav-label">CEJM</span>
+        </button>
+        <button class="bottom-nav-item" data-view="coach" onclick="App.renderView('coach')">
+          <span class="bottom-nav-icon" style="color: var(--cyan-primary);">🎙️</span>
+          <span class="bottom-nav-label" style="color: var(--cyan-primary);">JARVIS</span>
+        </button>
+      </nav>
     </main>
   </div>
 
@@ -270,5 +308,14 @@ Explanation: NetFlow captures 5-tuple flow metadata."></textarea>
   <script src="js/modules/cejm-hub.js"></script>
   <script src="js/modules/toeic-hub.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('⚡ PWA Service Worker prêt !', reg.scope))
+          .catch((err) => console.warn('PWA SW non enregistré:', err));
+      });
+    }
+  </script>
 </body>
 </html>

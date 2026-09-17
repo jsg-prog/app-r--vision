@@ -16,13 +16,16 @@ Ce fichier sert de mémoire permanente pour l'assistant Antigravity sur n'import
   4. Préparation au **TOEIC** (Objectif 750+ / 850+) : Part 5 (Incomplete Sentences), règles de grammaire et vocabulaire IT.
 
 ## Architecture du Projet
-L'application est une Single-Page Application (SPA) ultra-rapide, moderne et sans dépendances (`index.html`, `css/`, `js/`).
+L'application est une Single-Page Application (SPA) et **Progressive Web App (PWA)** ultra-rapide, moderne, sans dépendances, installable sur mobile/tablette et hébergée sur **GitHub Pages** (`https://jsg-prog.github.io/app-r--vision/`).
 
 ### Structure des Fichiers
-- `index.html` : Interface principale avec design dark glassmorphic/cyberpunk et navigation fluide.
-- `Lancer-App.bat` : Lanceur 1-clic pour ouvrir l'application dans le navigateur par défaut.
+- `index.html` : Interface principale avec design dark glassmorphic/cyberpunk, navigation responsive (tiroir mobile + barre inférieure au pouce).
+- `manifest.json` : Configuration PWA (icônes, plein écran, installation sur écran d'accueil iPhone/Android).
+- `sw.js` : Service Worker pour le cache hors-ligne et la vitesse instantanée.
+- `.github/workflows/deploy-pages.yml` : Déploiement automatique GitHub Actions vers GitHub Pages.
+- `Lancer-App.bat` : Lanceur 1-clic pour ouvrir l'application dans le navigateur par défaut sur PC.
 - `css/`
-  - `style.css` : Thème global Cyberpunk, grille futuriste, typographie (Inter/JetBrains Mono).
+  - `style.css` : Thème global Cyberpunk, grille futuriste, navigation responsive mobile/tablette.
   - `components.css` : Styles des composants (Quiz, Flashcards, HUD holographique J.A.R.V.I.S., Calculateur IP).
 - `js/data/`
   - `sisr-database.js` : Questions, flashcards et cheat-sheet BTS SIO SISR (VLAN 802.1Q, Trunk, OSPF, NAT, DHCP DORA, AD DS, GPO, Sauvegarde 3-2-1, Tables de Routage, Longest Prefix Match, Distance Administrative, STP 802.1D / RSTP 802.1w, PortFast, BPDU Guard).

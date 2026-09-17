@@ -102,12 +102,30 @@ const App = {
   },
 
   // ------------------------------------------------------------------------
+  // Mobile Sidebar Drawer Controls
+  // ------------------------------------------------------------------------
+  toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    if (sidebar) sidebar.classList.toggle("open");
+    if (backdrop) backdrop.classList.toggle("active");
+    this.playSound("click");
+  },
+
+  closeSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    if (sidebar) sidebar.classList.remove("open");
+    if (backdrop) backdrop.classList.remove("active");
+  },
+
+  // ------------------------------------------------------------------------
   // View Router
   // ------------------------------------------------------------------------
   renderView(viewId) {
     this.currentView = viewId;
 
-    // Update active nav button
+    // Update active nav button (Sidebar)
     document.querySelectorAll(".nav-item").forEach(item => {
       if (item.getAttribute("data-view") === viewId) {
         item.classList.add("active");
@@ -115,6 +133,18 @@ const App = {
         item.classList.remove("active");
       }
     });
+
+    // Update active nav button (Mobile Bottom Bar)
+    document.querySelectorAll(".bottom-nav-item").forEach(item => {
+      if (item.getAttribute("data-view") === viewId) {
+        item.classList.add("active");
+      } else {
+        item.classList.remove("active");
+      }
+    });
+
+    // Close mobile drawer if open
+    this.closeSidebar();
 
     // Hide all view sections
     document.querySelectorAll(".view-section").forEach(sec => {
